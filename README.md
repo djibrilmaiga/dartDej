@@ -10,7 +10,7 @@
 
 ---
 
-## 🚀 Fonctionnalités clés
+##  Fonctionnalités clés
 
 - **Initialisation & gestion des agents** 
   - Ajouter, modifier ou supprimer des agents  
@@ -33,7 +33,7 @@
 
 ---
 
-## 📦 Installation
+##  Installation
 
 1. **Cloner le dépôt**  
    ```bash
