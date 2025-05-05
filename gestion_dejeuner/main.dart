@@ -5,13 +5,34 @@ import 'tourdepassage.dart';
 import 'calendrier.dart';
 
 void main() {
+  /*
   print('Entrez le nom  votre entreprise  :');
   String? nomDeEntreprise = stdin.readLineSync();
   print("Entrez le nombre d'agent de votre entreprise");
-  String? nbrAgentStr = stdin.readLineSync();
-  int? nbrAgent = int.tryParse(nbrAgentStr ?? '');
-  int agentCounter = 1;
-  setAgent(nbrAgent, agentCounter);
+  //String? nbrAgentStr = stdin.readLineSync();
+  //int? nbrAgent = int.tryParse(nbrAgentStr ?? '');
+  //int agentCounter = 1;
+  // setAgent(nbrAgent, agentCounter);*/
+  List<Agent> list_agent = [];
+  for (int i = 0; i < 10; i++) {
+    String nom = "nom$i";
+    String prenom = "prenom$i";
+    String email = "email$i@gmail.com";
+    String motDpasse = "motdepasse$i";
+    Agent agent = Agent(
+      nom: nom,
+      prenom: prenom,
+      email: email,
+      motDePasse: motDpasse,
+    );
+    list_agent.add(agent);
+  }
+  print(list_agent);
+  //creation d'une rotation
+  Rotation rotation = setRotation(list_agent, 5);
+  print("${rotation.tour!.length}");
+  quatreTour(rotation);
+  
 }
 
 void setAgent(nbrAgent, agentCounter) {
@@ -67,20 +88,31 @@ void setMenu() {
 }
 
 Rotation setRotation(List list_agent, int jourConfigure) {
+  print(list_agent[0]);
   Rotation rotation = Rotation();
+  rotation.tour = [];
   //je dois recupérer le jour configurer et calculer la date prevue en fonction de ça
   DateTime toDay = DateTime.now();
+  DateTime datePrevue;
   var start = 0;
   //j'initialise la datePrevue
   if (toDay.weekday < jourConfigure) {
     start = jourConfigure - toDay.weekday;
+    datePrevue = toDay.add(Duration(days: start + 7));
+  } else {
+    datePrevue = toDay.add(Duration(days: 7));
   }
-  DateTime datePrevue = toDay.add(Duration(days: start + 7));
   list_agent.forEach((element) {
     TourDePassage tour = TourDePassage(element, false, datePrevue);
     //on ajoute ce tour à la liste des tours dans rotation
-    rotation.tour!.add(tour);
-    datePrevue = datePrevue;
+    if (rotation.tour != null) {
+      print(tour.agent!.nom);
+      print(tour.estJourFerier);
+      print(tour.datePrevue);
+      rotation.tour!.add(tour);
+      print(rotation.tour!.length);
+    }
+    datePrevue = datePrevue.add(Duration(days: 7));
   });
   //on retourne cette rotation
   return rotation;
@@ -89,14 +121,18 @@ Rotation setRotation(List list_agent, int jourConfigure) {
 //affichage des 4 prochains tours de la rotation
 void quatreTour(Rotation rotation) {
   //on recupère la date d'aujourd'hui
-  DateTime toDay = DateTime.now();
+  DateTime day = DateTime.now();
+  day = day.add(Duration(days: 10));
+  print("La date d'aujourd'hui est: $day");
   //pour recuperer l'index du premier prochain tour
   int? index_tour;
   //je parcours la date pour chercher la première date > toDay
   var tour = rotation.tour!;
   for (int i = 0; i < tour.length; i++) {
-    if (tour[i].datePrevue!.isAfter(toDay)) {
+    print("boucle");
+    if (tour[i].datePrevue!.isAfter(day) == true) {
       index_tour = i;
+      print(index_tour);
       break; //on sort de la liste
     }
   }
@@ -109,6 +145,7 @@ void quatreTour(Rotation rotation) {
       print("Tour $count");
       print("Agent: ${tour[i].agent!.nom} ${tour[i].agent!.prenom}");
       print("Date prevue: ${tour[i].datePrevue}");
+      count++;
     }
   } else {
     print("Aucun tour prevue dans cette rotation");
@@ -120,7 +157,7 @@ void sautDate(Rotation rotation, Calendrier calendrier, int tourcourant) {
   var tour = rotation.tour!;
   // on verifie si l'element est dans la liste des jourFerier
   var jourferiers = calendrier.jourferiers;
-  for (int j = 0; j < jourferiers!.length; j++) {
+  for (int j = 0; j < jourferiers.length; j++) {
     //si on trouve que la date prevue est ferié
     if ((jourferiers[j].date.weekday ==
             tour[tourcourant].datePrevue!.weekday) &&
@@ -132,8 +169,9 @@ void sautDate(Rotation rotation, Calendrier calendrier, int tourcourant) {
   }
   //modifier la valeur des autres tourdepassage
   if (tour[tourcourant].estJourFerier == true) {
-    for (int t = tourcourant; t < tour!.length; t++) {
+    for (int t = tourcourant; t < tour.length; t++) {
       tour[t + 1].datePrevue!.add(Duration(days: 7));
     }
   }
+  //on verifie si la date se trouve dans la liste des evènements
 }
