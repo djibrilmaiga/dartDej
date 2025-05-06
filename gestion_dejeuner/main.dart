@@ -3,6 +3,8 @@ import 'agent.dart';
 import 'rotation.dart';
 import 'tourdepassage.dart';
 import 'calendrier.dart';
+import 'dart:convert';
+import 'jourferier.dart';
 
 void main() {
   /*
@@ -32,7 +34,6 @@ void main() {
   Rotation rotation = setRotation(list_agent, 5);
   print("${rotation.tour!.length}");
   quatreTour(rotation);
-  
 }
 
 void setAgent(nbrAgent, agentCounter) {
@@ -88,12 +89,12 @@ void setMenu() {
 }
 
 Rotation setRotation(List list_agent, int jourConfigure) {
-  print(list_agent[0]);
   Rotation rotation = Rotation();
   rotation.tour = [];
   //je dois recupérer le jour configurer et calculer la date prevue en fonction de ça
   DateTime toDay = DateTime.now();
   DateTime datePrevue;
+  Status status = Status.Present;
   var start = 0;
   //j'initialise la datePrevue
   if (toDay.weekday < jourConfigure) {
@@ -103,11 +104,14 @@ Rotation setRotation(List list_agent, int jourConfigure) {
     datePrevue = toDay.add(Duration(days: 7));
   }
   list_agent.forEach((element) {
-    TourDePassage tour = TourDePassage(element, false, datePrevue);
+    TourDePassage tour = TourDePassage(
+      agent: element,
+      status: status,
+      datePrevue: datePrevue,
+    );
     //on ajoute ce tour à la liste des tours dans rotation
     if (rotation.tour != null) {
       print(tour.agent!.nom);
-      print(tour.estJourFerier);
       print(tour.datePrevue);
       rotation.tour!.add(tour);
       print(rotation.tour!.length);
@@ -153,25 +157,16 @@ void quatreTour(Rotation rotation) {
 }
 
 //decalage des datePrevue
-void sautDate(Rotation rotation, Calendrier calendrier, int tourcourant) {
+void sautDate(Rotation rotation, JourFerier jourFerier, int tourcourant) {
   var tour = rotation.tour!;
-  // on verifie si l'element est dans la liste des jourFerier
-  var jourferiers = calendrier.jourferiers;
-  for (int j = 0; j < jourferiers.length; j++) {
-    //si on trouve que la date prevue est ferié
-    if ((jourferiers[j].date.weekday ==
-            tour[tourcourant].datePrevue!.weekday) &&
-        (jourferiers[j].date.month == tour[tourcourant].datePrevue!.month)) {
-      //on change la valeur de date prevue d'une semaine
-      tour[tourcourant].datePrevue!.add(Duration(days: 7));
-      tour[tourcourant].estJourFerier = true;
-    }
-  }
-  //modifier la valeur des autres tourdepassage
-  if (tour[tourcourant].estJourFerier == true) {
+  //on verifie si la date se trouve dans la liste des evènements*/
+  if (tour[tourcourant].datePrevue!.isAfter(jourFerier.jourDebut!) ||
+      tour[tourcourant].datePrevue!.isBefore(jourFerier.jourFin!)) {
+    //on change la valeur de date prevue d'une semaine
+    tour[tourcourant].datePrevue!.add(Duration(days: 7));
+    //modifier la valeur des autres tourdepassage
     for (int t = tourcourant; t < tour.length; t++) {
       tour[t + 1].datePrevue!.add(Duration(days: 7));
     }
   }
-  //on verifie si la date se trouve dans la liste des evènements
 }
