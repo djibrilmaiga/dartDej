@@ -1,0 +1,23 @@
+{
+  "agents": [
+    {
+      "nom": "seydou",
+      "prenom": "dembele",
+      "email": "dem@gmail.com",
+      "mot_de_passe": "demcodes",
+      "estActive": true,
+      "estAdmin": true
+    },
+    {
+      "nom": "ganga",
+      "prenom": "maiga",
+      "email": "ganga@gmail.com",
+      "mot_de_passe": "ganga",
+      "estActive": true,
+      "estAdmin": false
+    }
+  ],
+  "rotations": [],
+  "indisponibilites": [],
+  "joursFeries": []
+}

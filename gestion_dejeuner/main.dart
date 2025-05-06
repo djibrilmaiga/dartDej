@@ -1,65 +1,104 @@
-import 'dart:io';
-import 'agent.dart';
+import 'models/agent.dart';
+import 'services/agent_service.dart';
+import 'utils.dart';
 
-void main() {
-  print('Entrez le nom  votre entreprise  :');
-  String? nomDeEntreprise = stdin.readLineSync();
-  print("Entrez le nombre d'agent de votre entreprise");
-  String? nbrAgentStr = stdin.readLineSync();
-  int? nbrAgent = int.tryParse(nbrAgentStr ?? '');
-  int agentCounter = 1;
-  setAgent(nbrAgent, agentCounter);
-}
+void main() async {
+  Agent? agent;
 
-void setAgent(nbrAgent, agentCounter) {
-  print("Le premier agent inserer est <ADMIN>");
-  while (nbrAgent != null && nbrAgent > 0) {
-    print("Enrefistrer l'agent $agentCounter ");
-    print("Donner le nom de l'agent $agentCounter");
-    String? nomAgent = stdin.readLineSync();
-    print("Donner le prenom de l'agent $agentCounter");
-    String? prenomAgent = stdin.readLineSync();
-    print("Donner le eamil de l'agent $agentCounter");
-    String? emailAgent = stdin.readLineSync();
-    print("Donner le mot de passe  de l'agent $agentCounter");
-    String? passwordAgent = stdin.readLineSync();
-    if (nomAgent != null ||
-        prenomAgent != null ||
-        emailAgent != null ||
-        passwordAgent != null) {
-      Agent agent = Agent(
-          nom: nomAgent!,
-          prenom: prenomAgent!,
-          email: emailAgent!,
-          motDePasse: passwordAgent!);
-      Agent.AgentList.add(agent);
+  // int userChoice = showMenu([
+  //   "Déclarer une indisponibilité",
+  //   "Afficher prochaines rotations",
+  //   "Se Deconnecter"
+  // ], "Le menu pour Agent Connecter");
+  print(
+      "^^^^^^^^🔥🔥🔥🔥🔥🔥 Veillez vous Connecter en tant qu'ADMIN ! MERCI 🔥🔥🔥🔥🔥🔥^^^^^^^^^^");
+  // Demande de connexion
+  agent = await AgentService.seConnecter();
+
+  if (agent != null) {
+    if (agent.isAdmin) {
+      print("✅ Bienvenue vous êtes Admin(Mr/Mme) ${agent.nom} !");
+
+      bool quitter = false;
+
+      while (!quitter) {
+        int choice = showMenu([
+          "S'inscrire Agent",
+          "Connecter Agent",
+          "Afficher le liste des agents",
+          "Lancer la rotation",
+          "Susprendre la rotation",
+          "Banir Agent",
+          "Quitter la Session",
+        ], "🥳🥳🥳🥳Bienvenue sur  DartDej[Menu Admin] ☃︎");
+
+        switch (choice) {
+          case 0:
+            await AgentService.sincrire();
+            break;
+          case 5:
+            print("👋 Vous avez choisi de quitter.");
+            quitter = true;
+            break;
+          default:
+            print("❗ Choix invalide.");
+        }
+      }
+    } else {
+      print("Vous n'êtes pas admin, accès refusé.");
     }
-    nbrAgent --;
-    agentCounter ++;
+  } else {
+    print(" Connexion échouée.");
   }
-  Agent.AgentList[0].isAdmin = true;
 }
 
-void setMenu(){
-  print("Pour naviguer dans le Menu Taper sur ::::::::::::::::::>>>>>>>>>>>>>>");
-  print("1::: Ajouter un Calandrier !");
-  print("2::: Ajouter un Agent !");
-  print("3::: Banir une Agent !");
-  print("4::: Suspendre le rotation !");
-  String? optionAsString = stdin.readLineSync();
+// final rotationManager = RotationManager();
+//   await rotationManager.chargerDonnees();
 
-  switch(optionAsString){
-    case '1':
-      // ajouter un calandier
-    case '2':
-      //ajouter un agent
-    case '3':
-      //Banir un agent
-    case '4':
-      //Suspendre la rotation
-  }
+  // while (true) {
+  //   int choice = showMenu([
+  //     
+  //     "Ajouter un agent",
+  //    
+  //     "Envoyer rappel (simulation)",
+  //     "Quitter",
+  //   ], "Menu Principal");
 
-
-}
-
-
+  //   switch (choice) {
+  //     case 0:
+  //       rotationManager.afficherProchainesRotations();
+  //       break;
+  //     case 1:
+  //       // Entrée interactive
+  //       print("Nom :");
+  //       String? nom = stdin.readLineSync();
+  //       print("Prénom :");
+  //       String? prenom = stdin.readLineSync();
+  //       print("Email :");
+  //       String? email = stdin.readLineSync();
+  //       if (nom != null && prenom != null && email != null) {
+  //         rotationManager.ajouterAgent(Agent(nom: nom, prenom: prenom, email: email));
+  //       }
+  //       break;
+  //     case 2:
+  //       // Indispo
+  //       print("Email de l'agent :");
+  //       String? email = stdin.readLineSync();
+  //       print("Date (AAAA-MM-JJ) :");
+  //       String? dateStr = stdin.readLineSync();
+  //       if (email != null && dateStr != null) {
+  //         rotationManager.declarerIndisponibilite(email, DateTime.parse(dateStr));
+  //       }
+  //       break;
+  //     case 3:
+  //       print("Date du rappel (AAAA-MM-JJ) :");
+  //       String? dateStr = stdin.readLineSync();
+  //       if (dateStr != null) {
+  //         rotationManager.envoyerRappel(DateTime.parse(dateStr));
+  //       }
+  //       break;
+  //     case 4:
+  //       print("Au revoir !");
+  //       return;
+  //   }
+  // }
