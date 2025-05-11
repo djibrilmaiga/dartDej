@@ -33,10 +33,16 @@
 
 ---
 
-##  Installation
+##  Installation & Execution
 
 1. **Cloner le dépôt**  
    ```bash
    git clone https://github.com/djibrilmaiga/dartDej.git
    cd dartDej
+   dart pub get 
+   
+   
+ 2. **Cloner le dépôt**
+    ```bash
+    dart main.dart
 
