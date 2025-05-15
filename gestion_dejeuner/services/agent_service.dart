@@ -23,6 +23,12 @@ class AgentService {
           List<dynamic> agentsList = data['agents'] ?? [];
 
           // Ajouter le nouvel agent
+          if (await agentExist(agent.email)) {
+            print("Un Agent existe avec cet Email ! Merci de :");
+            print("Vouloir Verifier votre Email");
+            return;
+          }
+
           agentsList.add(agent.toJson());
 
           // Mettre à jour la map principale
@@ -100,6 +106,7 @@ class AgentService {
       // On suppose que chaque 'user' est un Map<String, dynamic>
       if (user['email'] == email && user['mot_de_passe'] == motDePasse) {
         print(" Connexion réussie. Bienvenue ${user['nom']} !");
+        user['isLogin'] = true;
         trouve = true;
         return Agent.fromJson(user);
       }
@@ -109,5 +116,86 @@ class AgentService {
       print(" Email ou mot de passe incorrect.");
     }
     return null;
+  }
+
+  static Future<void> afficherListeAgents() async {
+    final file = File('user_data.json');
+
+    if (await file.exists()) {
+      String contents = await file.readAsString();
+      Map<String, dynamic> dataJson = jsonDecode(contents);
+      List<dynamic> users = dataJson["agents"];
+
+      if (users.isNotEmpty) {
+        print(" 🚀 :) Liste des agents :");
+        for (var user in users) {
+          print(
+              " ✅ Nom: ${user['nom']}, Prénom: ${user['prenom']}, Email: ${user['email']}");
+        }
+      } else {
+        print("Aucun agent enregistré.");
+      }
+    } else {
+      print("Aucun fichier trouvé.");
+    }
+  }
+
+  static Future<void> banirAgent() async {
+    final file = File('user_data.json');
+
+    if (await file.exists()) {
+      String contents = await file.readAsString();
+      Map<String, dynamic> dataJson = jsonDecode(contents);
+      List<dynamic> users = dataJson["agents"];
+
+      if (users.isNotEmpty) {
+        print(" 🚀 Liste des agents :");
+        for (var user in users) {
+          print(
+              " ✅ Nom: ${user['nom']}, Prénom: ${user['prenom']}, Email: ${user['email']}");
+        }
+
+        print(" 🚨 Entrez l'email de l'agent à bannir :");
+        String? emailABannir = stdin.readLineSync();
+
+        bool agentTrouve = false;
+
+        for (var user in users) {
+          if (user['email'] == emailABannir) {
+            user['estActif'] = false;
+            agentTrouve = true;
+            print(" 🚩 Agent banni avec succès !");
+            break;
+          }
+        }
+
+        if (!agentTrouve) {
+          print("Aucun agent trouvé avec cet email.");
+        }
+
+        // Mettre à jour le fichier
+        await file.writeAsString(jsonEncode(dataJson), flush: true);
+      } else {
+        print("Aucun agent enregistré.");
+      }
+    } else {
+      print("Aucun fichier trouvé.");
+    }
+  }
+
+  static Future<bool> agentExist(String email) async {
+    final file = File('user_data.json');
+    if (await file.exists()) {
+      final content = await file.readAsString();
+      final Map<String, dynamic> data = jsonDecode(content);
+      // Accéder à la liste des agents
+      List<dynamic> agentsList = data['agents'] ?? [];
+
+      // Ajouter le nouvel agent
+      return agentsList.any((element) => element['email'] == email);
+    } else {
+      print(" File n'existe pas de lors de verification");
+      return false;
+    }
   }
 }

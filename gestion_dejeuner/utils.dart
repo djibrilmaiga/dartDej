@@ -7,3 +7,7 @@ int showMenu(List<String> choices, String message) {
   ).interact();
   return selection;
 }
+
+String formatDate(DateTime date) {
+  return "${date.day}/${date.month}/${date.year}";
+}

@@ -56,10 +56,28 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "logging",
+      "rootUri": "file:///Users/MacBookAir/.pub-cache/hosted/pub.dev/logging-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "mailer",
+      "rootUri": "file:///Users/MacBookAir/.pub-cache/hosted/pub.dev/mailer-6.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "meta",
       "rootUri": "file:///Users/MacBookAir/.pub-cache/hosted/pub.dev/meta-1.16.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "mime",
+      "rootUri": "file:///Users/MacBookAir/.pub-cache/hosted/pub.dev/mime-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
     },
     {
       "name": "path",
@@ -116,7 +134,7 @@
       "languageVersion": "3.2"
     }
   ],
-  "generated": "2025-05-05T20:44:17.810275Z",
+  "generated": "2025-05-12T11:51:17.651649Z",
   "generator": "pub",
   "generatorVersion": "3.3.4"
 }

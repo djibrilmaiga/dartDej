@@ -6,8 +6,6 @@ class Agent {
   bool estActif = true;
   bool isAdmin = false;
 
-  static List<Agent> AgentList = [];
-
   Agent({
     required this.nom,
     required this.prenom,
@@ -42,6 +40,4 @@ class Agent {
 
     return agent;
   }
-
-  declarerIndisponibilite() {}
 }
