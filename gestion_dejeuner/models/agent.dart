@@ -1,25 +1,26 @@
+/// **Nom :** Le nom complet de l'utilisateur.
+///
+/// - *Requis:* Oui
+/// - *Type:* String
 class Agent {
   String nom;
   String prenom;
   String email;
-  String motDePasse;
+  String motDePasse = "darakadouman";
   bool estActif = true;
-  bool isAdmin = false;
 
   Agent({
     required this.nom,
     required this.prenom,
     required this.email,
-    required this.motDePasse,
   });
 
   Map<String, dynamic> toJson() => {
         'nom': nom,
         'prenom': prenom,
         'email': email,
-        'mot_de_passe': motDePasse,
+        'motDePasse': motDePasse,
         'estActive': estActif,
-        'estAdmin': isAdmin,
       };
   String get fullName => '$prenom $nom';
 
@@ -28,14 +29,13 @@ class Agent {
       nom: json['nom'] as String,
       prenom: json['prenom'] as String,
       email: json['email'] as String,
-      motDePasse: json['mot_de_passe'] as String,
     );
 
     if (json['estActif'] != null) {
       agent.estActif = json['estActif'] as bool;
     }
-    if (json['estAdmin'] != null) {
-      agent.isAdmin = json['estAdmin'] as bool;
+    if (json['motDePasse'] != null) {
+      agent.motDePasse = json['motDePasse'] as String;
     }
 
     return agent;

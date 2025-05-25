@@ -10,7 +10,6 @@ import '../models/indiponibilite.dart';
 import '../models/jour.dart';
 import '../models/rotation.dart';
 import '../utils.dart';
-import 'mail_sender.dart';
 
 class RotationService {
   static List<Agent> agents = [];
@@ -280,21 +279,21 @@ class RotationService {
           agentsCopy.removeAt(0);
           currentDate = currentDate.add(Duration(days: 7)); // prochaine semaine
           index++;
-          DateTime dateDuTour = currentDate;
-          DateTime dateRappel = dateDuTour.subtract(Duration(days: 2));
-          // Envoi d'un rappel 2 jours avant le tour
+          // DateTime dateDuTour = currentDate;
+          // DateTime dateRappel = dateDuTour.subtract(Duration(days: 2));
+          // // Envoi d'un rappel 2 jours avant le tour
 
-          Future.delayed(Duration(seconds: 2), () async {
-            await sendEmail(agentActuel.email,
-                "Rappel : Vous avez un tour le ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
-            print(
-                "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
-          });
+          // Future.delayed(Duration(seconds: 2), () async {
+          //   await sendEmail(agentActuel.email,
+          //       "Rappel : Vous avez un tour le ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
+          //   print(
+          //       "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
+          // });
           // if (DateTime.now().isAfter(dateRappel) &&
           //     DateTime.now().isBefore(dateDuTour)) {
 
-          print(
-              "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
+          // print(
+          //     "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
           // }
         }
       }

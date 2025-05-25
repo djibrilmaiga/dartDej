@@ -1,171 +1,23 @@
 {
+  "admin": [
+    {
+      "nom": "admin",
+      "prenom": "admin",
+      "email": "admin@gmail.com",
+      "motDePasse": "darakadouman",
+      "isAdmin": true
+    }
+  ],
   "agents": [
     {
-      "nom": "seydou",
-      "prenom": "dembele",
+      "nom": "Dembélé",
+      "prenom": "Seydou",
       "email": "dembeleseydou053@gmail.com",
-      "mot_de_passe": "demcodes",
       "estActive": true,
-      "estAdmin": true
-    },
-    {
-      "nom": "ganga",
-      "prenom": "maiga",
-      "email": "ganga@gmail.com",
-      "mot_de_passe": "ganga",
-      "estActive": true,
-      "estAdmin": false
-    },
-    {
-      "nom": "Kadiatou",
-      "prenom": "Tall",
-      "email": "tall@gmail.com",
-      "mot_de_passe": "1234",
-      "estActive": true,
-      "estAdmin": false,
-      "estActif": false
-    },
-    {
-      "nom": "Hamza",
-      "prenom": "SanMo",
-      "email": "hamza@gmail.com",
-      "mot_de_passe": "1234",
-      "estActive": true,
-      "estAdmin": false
-    },
-    {
-      "nom": "sekou",
-      "prenom": "keita",
-      "email": "sekou@gmail.com",
-      "mot_de_passe": "sekou",
-      "estActive": true,
-      "estAdmin": false
-    },
-    {
-      "nom": "Amadou",
-      "prenom": "Diallo",
-      "email": "ama@gmail.com",
-      "mot_de_passe": "1234",
-      "estActive": true,
-      "estAdmin": false
+      "motDePasse": "dem2025"
     }
   ],
-  "rotations": [
-    {
-      "agent": {
-        "nom": "ganga",
-        "prenom": "maiga",
-        "email": "ganga@gmail.com",
-        "mot_de_passe": "ganga",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-05-27T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 0
-    },
-    {
-      "agent": {
-        "nom": "Kadiatou",
-        "prenom": "Tall",
-        "email": "tall@gmail.com",
-        "mot_de_passe": "1234",
-        "estActive": false,
-        "estAdmin": false
-      },
-      "date": "2025-06-03T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 1
-    },
-    {
-      "agent": {
-        "nom": "Hamza",
-        "prenom": "SanMo",
-        "email": "hamza@gmail.com",
-        "mot_de_passe": "1234",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-06-10T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 2
-    },
-    {
-      "agent": {
-        "nom": "sekou",
-        "prenom": "keita",
-        "email": "sekou@gmail.com",
-        "mot_de_passe": "sekou",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-06-17T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 3
-    },
-    {
-      "agent": {
-        "nom": "Amadou",
-        "prenom": "Diallo",
-        "email": "ama@gmail.com",
-        "mot_de_passe": "1234",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-06-24T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 4
-    },
-    {
-      "agent": {
-        "nom": "seydou",
-        "prenom": "dembele",
-        "email": "dembeleseydou053@gmail.com",
-        "mot_de_passe": "demcodes",
-        "estActive": true,
-        "estAdmin": true
-      },
-      "date": "2025-07-01T12:09:04.514884",
-      "status": "En attente du tour",
-      "agentIndex": 5
-    }
-  ],
-  "indisponibilites": [
-    {
-      "agent": {
-        "nom": "ganga",
-        "prenom": "maiga",
-        "email": "ganga@gmail.com",
-        "mot_de_passe": "ganga",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-05-12T00:00:00.000",
-      "declarerDateTour": "2025-05-13T11:43:58.698207",
-      "reason": "grippée"
-    },
-    {
-      "agent": {
-        "nom": "ganga",
-        "prenom": "maiga",
-        "email": "ganga@gmail.com",
-        "mot_de_passe": "ganga",
-        "estActive": true,
-        "estAdmin": false
-      },
-      "date": "2025-05-22T00:00:00.000",
-      "declarerDateTour": "2025-05-13T11:46:42.500144",
-      "reason": "malade"
-    }
-  ],
+  "rotations": [],
   "absences": [],
-  "joursFeries": [
-    { "description": "Jour de fête", "date": "2025-05-09T00:00:00.000" },
-    {
-      "description": "jour de repos pour toute l'équipe",
-      "date": "2025-05-20T00:00:00.000"
-    },
-    { "description": "test", "date": "2025-05-23T00:00:00.000" },
-    { "description": "Jour de fete", "date": "2025-05-29T00:00:00.000" }
-  ]
+  "joursFeries": []
 }

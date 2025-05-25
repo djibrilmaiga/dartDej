@@ -1,5 +1,9 @@
 import 'agent.dart';
 
+/// ```dart
+/// var user = Utilisateur('Ali', 21);
+/// print(user.saluer());
+/// ```
 class Indisponibilite {
   Agent agent;
   DateTime date;
