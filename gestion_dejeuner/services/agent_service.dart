@@ -5,7 +5,12 @@ import '../models/admin.dart';
 import '../models/agent.dart';
 import 'mail_sender.dart';
 
+/// La classe `AgentService` fournit des méthodes pour gérer les agents dans l'application.
 class AgentService {
+  /// La méthode `createAdmin` permet de créer un administrateur par défaut si aucun administrateur n'existe déjà.
+  /// Elle vérifie si le fichier `user_data.json` existe et s'il contient déjà un administrateur.
+  /// Si aucun administrateur n'est trouvé, elle crée un nouvel administrateur avec des informations par défaut,
+  /// l'ajoute à la liste des administrateurs dans le fichier JSON, et retourne l'objet `Admin` créé.
   static Future<Admin?> createAdmin() async {
     final file = File('user_data.json');
     if (await file.exists()) {
@@ -31,6 +36,8 @@ class AgentService {
     return null;
   }
 
+  /// La Méthode `setAgent` permet de créer un agent en demandant les informations nécessaires à l'utilisateur
+  /// et retourne un objet Agent si les informations sont valides, sinon retourne null.
   static Agent? setAgent() {
     print("Donner le nom de l'agent :");
     String? nomAgent = stdin.readLineSync();
