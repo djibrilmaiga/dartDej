@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+import '../models/absence.dart';
 import '../models/agent.dart';
 import '../models/indiponibilite.dart';
 import '../models/jour.dart';
@@ -19,6 +20,7 @@ class RotationService {
   static List<TourAgent> rotation = [];
   static List<Indisponibilite> indisponibilites = [];
   static List<JourFerier> joursFeries = [];
+  static List<Absence> absences = [];
 
   static int rotationCycleNumber = 0;
   bool isFinishRotation = false;
@@ -35,6 +37,7 @@ class RotationService {
       List<dynamic> rotationsData = dataJson["rotations"];
       List<dynamic> indisponibiliteData = dataJson["indisponibilites"];
       List<dynamic> jourFerierData = dataJson["joursFeries"];
+      List<dynamic> absenceData = dataJson["absences"];
       for (var user in users) {
         agents.add(Agent.fromJson(user));
       }
@@ -46,8 +49,13 @@ class RotationService {
       for (var indisponibilite in indisponibiliteData) {
         indisponibilites.add(Indisponibilite.fromJson(indisponibilite));
       }
+
       for (var jourF in jourFerierData) {
         joursFeries.add(JourFerier.fromJson(jourF));
+      }
+
+      for (var element in absenceData) {
+        absences.add(Absence.fromJson(element));
       }
     } else {
       print("Aucun fichier trouvé.");
@@ -478,6 +486,17 @@ class RotationService {
     } else {
       for (var jour in joursFeries) {
         print("${jour.description} - ${formatDate(jour.date)}");
+      }
+    }
+  }
+
+  void afficherAbsence() {
+    if (absences.isEmpty) {
+      print("Aucune absence enregistrée.");
+    } else {
+      for (var absence in absences) {
+        print(
+            "${absence.agent.fullName} absent le ${formatDate(absence.dateAbsence)}");
       }
     }
   }
