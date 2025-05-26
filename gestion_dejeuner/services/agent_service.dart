@@ -64,7 +64,9 @@ class AgentService {
     }
   }
 
-// La methode pour S'inscire
+  /// La methode `sincrire` permet à l'admin d'inscrire un agent  en fournissant ses informations
+  /// et en les enregistrant dans le fichier `user_data.json`. Si l'agent existe déjà avec le même email,
+  /// un message d'erreur est affiché. Si l'inscription réussit, un email de confirmation est envoyé à l'agent.
   static Future<void> sincrire() async {
     final file = File('user_data.json');
 

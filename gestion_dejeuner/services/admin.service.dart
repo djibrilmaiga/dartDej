@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+/// La méthode `connecterAdmin` permet de connecter un administrateur
+/// en vérifiant son email et son mot de passe à partir d'un fichier JSON.
+/// Si la connexion est réussie, elle retourne `true` et affiche un message de succès.
+/// Si l'email ou le mot de passe est incorrect, elle retourne `false` et affiche un message d'erreur.
 class AdminService {
   static Future<bool> connecterAdmin(String email, String password) async {
     final file = File('user_data.json');

@@ -15,9 +15,56 @@
       "email": "dembeleseydou053@gmail.com",
       "estActive": true,
       "motDePasse": "dem2025"
+    },
+    {
+      "nom": "Amadou",
+      "prenom": "Djim",
+      "email": "jimlecracken13@gmail.com",
+      "motDePasse": "darakadouman",
+      "estActive": true
     }
   ],
-  "rotations": [],
+  "rotations": [
+    {
+      "rotation": [
+        {
+          "tour": {
+            "agent": {
+              "nom": "Dembélé",
+              "prenom": "Seydou",
+              "email": "dembeleseydou053@gmail.com",
+              "motDePasse": "dem2025",
+              "estActive": true
+            },
+            "date": "2025-05-31T11:46:21.160685",
+            "status": "En attente du tour",
+            "agentIndex": 0
+          }
+        }
+      ],
+      "rotationCycleNumber": 1
+    },
+    {
+      "rotation": [
+        {
+          "tour": {
+            "agent": {
+              "nom": "Dembélé",
+              "prenom": "Seydou",
+              "email": "dembeleseydou053@gmail.com",
+              "motDePasse": "dem2025",
+              "estActive": true
+            },
+            "date": "2025-05-28T11:47:09.964536",
+            "status": "En attente du tour",
+            "agentIndex": 0
+          }
+        }
+      ],
+      "rotationCycleNumber": 2
+    }
+  ],
   "absences": [],
+  "indisponibilites": [],
   "joursFeries": []
 }

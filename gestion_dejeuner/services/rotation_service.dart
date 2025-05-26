@@ -10,23 +10,23 @@ import '../models/indiponibilite.dart';
 import '../models/jour.dart';
 import '../models/rotation.dart';
 import '../utils.dart';
+import 'mail_sender.dart';
 
+/// La classe `RotationService` gère les opérations liées aux rotations des agents,
+/// y compris la gestion des indisponibilités, des jours fériés et l'affectation des tours.
 class RotationService {
   static List<Agent> agents = [];
   static List<TourAgent> rotation = [];
   static List<Indisponibilite> indisponibilites = [];
   static List<JourFerier> joursFeries = [];
+
   static int rotationCycleNumber = 0;
   bool isFinishRotation = false;
   late int nombreAgent;
-
   int currentIndex = 0;
-  // Paramétrable
 
-  /// Initialiser à partir d'un fichier JSON ou en mémoire
+  /// Initialiser des variables `agents` `rotation`  `indisponibilites` `joursFeries` à partir d'un fichier JSON
   static Future<void> chargerDonnees() async {
-    // À implémenter : lire depuis fichier JSON (agents, rotations, etc.)
-
     File file = File('user_data.json');
     if (await file.exists()) {
       String contents = await file.readAsString();
@@ -39,9 +39,9 @@ class RotationService {
         agents.add(Agent.fromJson(user));
       }
 
-      for (var r in rotationsData) {
-        rotation.add(TourAgent.fromJson(r));
-      }
+      // for (var r in rotationsData) {
+      //   rotation.add(TourAgent.fromJson(r));
+      // }
 
       for (var indisponibilite in indisponibiliteData) {
         indisponibilites.add(Indisponibilite.fromJson(indisponibilite));
@@ -60,6 +60,9 @@ class RotationService {
     print("${agent.fullName} ajouté !");
   }
 
+  ///La méthode `declarerJourFerier` permet à l'administrateur de déclarer un jour férié
+  /// en saisissant la date et une description. Elle enregistre le jour férié dans un fichier JSON
+  /// et envoie un email à tous les agents pour les informer du jour férié.
   static Future<void> declarerJourFerier() async {
     late DateTime dateDuJourFerier;
     print("Renseigner le jour Ferier ci dessous (EX: 01/03/2023) :");
@@ -100,12 +103,15 @@ class RotationService {
       jsonData["joursFeries"] = joursFeries;
 
       await file.writeAsString(jsonEncode(jsonData));
+      agents.forEach((agent) => sendEmail(agent.email,
+          "Jour férié ajouté : ${jourFerier.description} le ${DateFormat("dd MMMM yyyy", "fr_FR").format(jourFerier.date)}"));
       print("✅ Jour Ferier  ajouté avec succès ${jourFerier.date} !");
     } else {
       print('Pas de fichier json pour sauvegarder le jour ferier ');
     }
   }
 
+  /// La méthode `getRotationDay` permet à l'administrateur de choisir le jour de rotation
   DateTime getRotationDay() {
     int dayIndex = showMenu([
       "🎃 :) Lundi",
@@ -146,6 +152,20 @@ class RotationService {
     return dateRotation;
   }
 
+  /// La méthode `getNextRotationDate` calcule la prochaine date de rotation
+  /// en fonction de la date de début et du jour de la semaine cible.
+  DateTime getNextRotationDate(DateTime startDate, int targetWeekday) {
+    int currentWeekday = startDate.weekday; // 1 = Lundi ... 7 = Dimanche
+
+    int daysToAdd = (targetWeekday - currentWeekday + 7) % 7;
+    if (daysToAdd == 0) {
+      // Si on est déjà le bon jour, planifie pour la semaine suivante
+      daysToAdd = 7;
+    }
+
+    return startDate.add(Duration(days: daysToAdd));
+  }
+
   Future<void> startRotation(DateTime dateRotation) async {
     // print(" 🎰 Rotation lancée !");
     File file = File('user_data.json');
@@ -171,12 +191,6 @@ class RotationService {
       for (var jourF in jourFerierData) {
         joursFeries.add(JourFerier.fromJson(jourF));
       }
-
-      // int prochainIndex = (rotation.isEmpty)
-      //     ? 0
-      //     : (rotation.last.agentIndex + 1) % agents.length;
-
-      // Agent prochainAgent = agents[prochainIndex];
 
       List<TourAgent> tours = await affecterTour(dateRotation);
 
@@ -209,9 +223,9 @@ class RotationService {
         agents.add(Agent.fromJson(user));
       }
 
-      for (var tour in tourData) {
-        rotation.add(TourAgent.fromJson(tour));
-      }
+      // for (var tour in tourData) {
+      //   rotation.add(TourAgent.fromJson(tour));
+      // }
 
       for (var indisponibilite in indisponibiliteData) {
         indisponibilites.add(Indisponibilite.fromJson(indisponibilite));
@@ -254,14 +268,18 @@ class RotationService {
 
         if (indisponible || estJourFerier) {
           // Reporter l'agent à la fin de la liste
-          print(
-              "${agentActuel.fullName} est indisponible ou jour férié le ${currentDate}, reporté en fin de liste.");
-          agentsCopy.removeAt(0);
-          agentsCopy.add(agentActuel);
-
-          // Pour un jour férié, on incrémente la date pour tout le monde
-          if (estJourFerier) {
-            currentDate = currentDate.add(Duration(days: 7));
+          if (indisponible) {
+            print(
+                "${agentActuel.fullName} est indisponible pour le ${currentDate}, Votre tour est repoté à la fin de liste . Merci");
+            agentsCopy.removeAt(0);
+            agentsCopy.add(agentActuel);
+          } else {
+            print(
+                "${currentDate} est un jour Férier votre Donc votre tour sera déclarer");
+            // Pour un jour férié, on incrémente la date pour tout le monde
+            if (estJourFerier) {
+              currentDate = currentDate.add(Duration(days: 7));
+            }
           }
         } else {
           // Créer le tour
@@ -297,12 +315,14 @@ class RotationService {
           // }
         }
       }
-
+      rotationCycleNumber++;
       // Sauvegarder les modifications
-      dataJson['rotations'] = tours.map((t) => t.toJson()).toList();
+      dataJson['rotations'].add({
+        'rotation': tours.map((t) => {"tour": t.toJson()}).toList(),
+        "rotationCycleNumber": rotationCycleNumber
+      });
       await file.writeAsString(jsonEncode(dataJson), flush: true);
 
-      rotationCycleNumber++;
       print(rotationCycleNumber);
       return tours;
     } else {
@@ -310,23 +330,14 @@ class RotationService {
     }
   }
 
-// Fonction utilitaire pour comparer 2 dates sans l’heure
+  /// Fonction utilitaire pour comparer 2 dates sans l’heure
+  /// Il prend en paramètre deux dates et les compare il sont égaux il retourne true
   bool isSameDate(DateTime d1, DateTime d2) {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
   }
 
-  DateTime getNextRotationDate(DateTime startDate, int targetWeekday) {
-    int currentWeekday = startDate.weekday; // 1 = Lundi ... 7 = Dimanche
-
-    int daysToAdd = (targetWeekday - currentWeekday + 7) % 7;
-    if (daysToAdd == 0) {
-      // Si on est déjà le bon jour, planifie pour la semaine suivante
-      daysToAdd = 7;
-    }
-
-    return startDate.add(Duration(days: daysToAdd));
-  }
-
+  ///La Méthode `declarerIndisponibilite` sert a déclarer une indisponibilité en passant votre [email] en argument
+  /// Ensuite il en enregistre les iformations dans le fichier json
   static Future<void> declarerIndisponibilite(String emailAgent) async {
     await chargerDonnees();
     final agent = agents.firstWhere(
@@ -378,15 +389,15 @@ class RotationService {
     }
   }
 
-  void afficherProchainesRotations(int nombre) {
-    List<TourAgent> prochaines = rotation
-        .where((r) => r.date.isAfter(DateTime.now()))
-        .take(nombre)
-        .toList();
-    for (var r in prochaines) {
-      print("${r.agent.nom} - ${r.date.toLocal()} (${r.status})");
-    }
-  }
+  // void afficherProchainesRotations(int nombre) {
+  //   List<TourAgent> prochaines = rotation
+  //       .where((r) => r.date.isAfter(DateTime.now()))
+  //       .take(nombre)
+  //       .toList();
+  //   for (var r in prochaines) {
+  //     print("${r.agent.nom} - ${r.date.toLocal()} (${r.status})");
+  //   }
+  // }
 
   /// Envoi de rappels simulés
   void envoyerRappel(DateTime date) {
@@ -396,7 +407,10 @@ class RotationService {
         "Rappel envoyé à ${entry.agent.fullName} pour le petit-déjeuner du ${formatDate(date)}");
   }
 
+  /// Méthode pour signaler l'absnece d'un Agent du système Daraka Douman
+
   Future<void> signalerAbsence() async {
+    DateTime dateAbsence;
     print("Veuillez entrer l'email de l'agent :");
     String? email = stdin.readLineSync();
 
@@ -410,7 +424,6 @@ class RotationService {
       String? dateString = stdin.readLineSync();
 
       if (dateString != null && dateString.isNotEmpty) {
-        DateTime dateAbsence;
         try {
           DateFormat format = DateFormat("dd/MM/yyyy");
           dateAbsence = format.parseStrict(dateString);
@@ -420,6 +433,22 @@ class RotationService {
         }
 
         // Logique pour signaler l'absence
+
+        File file = File("user_data.json");
+
+        if (await file.exists()) {
+          Map<String, dynamic> fileContent =
+              jsonDecode(await file.readAsString());
+
+          List<dynamic> absenceList = fileContent["absences"] ?? [];
+          // absenceList.add(absence.toJson());
+
+          fileContent["absences"] = absenceList;
+
+          await file.writeAsString(jsonEncode(fileContent), flush: true);
+        } else {
+          print("Pas de fichier json pour enregistrer l'absence d'un Agent");
+        }
         print(
             "⚠️ Absence signalée pour ${agent.fullName} le ${formatDate(dateAbsence)}");
       } else {
@@ -430,6 +459,7 @@ class RotationService {
     }
   }
 
+  /// Méthode pour afficher les  indisponiblités
   void afficherIndisponibilites() {
     if (indisponibilites.isEmpty) {
       print("Aucune indisponibilité enregistrée.");
@@ -441,6 +471,7 @@ class RotationService {
     }
   }
 
+  /// Méthode ppour afficher les jours férier du système Daraka Douman
   void afficherJoursFeries() {
     if (joursFeries.isEmpty) {
       print("Aucun jour férié enregistré.");
