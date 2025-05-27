@@ -52,6 +52,8 @@ void main() async {
               "Renseigner jour Ferier",
               "Desactiviter Agent",
               "Marquer une Absence",
+              //ajouter la liste des absences
+              "Afficher les absences",
               "Afficher les jours Ferier",
               "Afficher les indisponibilites",
               "Deconnexion",
@@ -85,13 +87,16 @@ void main() async {
                 break;
               case 7:
                 await RotationService.chargerDonnees();
+                RotationService().afficherAbsence();
+              case 8:
+                await RotationService.chargerDonnees();
                 RotationService().afficherJoursFeries();
                 break;
-              case 8:
+              case 9:
                 await RotationService.chargerDonnees();
                 RotationService().afficherIndisponibilites();
                 break;
-              case 9:
+              case 10:
                 print("👋 Vous êtes deconnecter");
                 quitter = true;
 
