@@ -151,9 +151,9 @@ class AgentService {
           trouve = true;
           return Agent.fromJson(user);
         }
-        if (!trouve) {
-          print(" Email ou mot de passe incorrect.");
-        }
+        // if (!trouve) {
+        //   print(" Email ou mot de passe incorrect.");
+        // }
       } else {
         print(
             "Vous êtes désactiver par l/'admin ! Veillez lui contacter afi qu/il vous active de nouveau .");
@@ -268,29 +268,45 @@ class AgentService {
       Map<String, dynamic> dataJson = jsonDecode(contents);
       List<dynamic> users = dataJson["agents"];
 
-      if (users.isNotEmpty) {
-        for (var user in users) {
-          if (user['email'] == email) {
-            user['motDePasse'] = motDePasse;
-            // Mettre à jour le fichier
-            await file.writeAsString(jsonEncode(dataJson), flush: true);
-            print(" ✅ Mot de passe mis à jour avec succès !");
-            print(
-                "Patienter vous allez recevoir un mail avec votre nouveau mot de passe .");
-            await sendEmail(
-                email,
-                "Votre mot de passe a été mis à jour avec succès !\n"
-                "Nouveau mot de passe: $motDePasse");
-            print(" 🟢 Email envoyé avec succès !");
+      if (users.isEmpty) {
+        print("❌ La liste des utilisateurs est vide.");
+        return;
+      }
 
-            break;
+      bool userFound = false;
+
+      for (var user in users) {
+        if (user['email'] == email) {
+          user['motDePasse'] = motDePasse;
+
+          // Mise à jour du fichier JSON
+          await file.writeAsString(jsonEncode(dataJson), flush: true);
+
+          print("✅ Mot de passe mis à jour avec succès !");
+          print(
+              "Patientez, vous allez recevoir un mail avec votre nouveau mot de passe.");
+
+          try {
+            await sendEmail(
+              email,
+              "Votre mot de passe a été mis à jour avec succès ! Nouveau mot de passe : $motDePasse",
+            );
+            print("🟢 Email envoyé avec succès !");
+            return;
+          } catch (e) {
+            print("❌ Erreur lors de l'envoi de l'email : $e");
           }
+
+          userFound = true;
+          return; // Arrêter la boucle après avoir trouvé l'utilisateur
         }
-      } else {
-        print("Aucun agent trouvé avec cet email.");
+      }
+
+      if (!userFound) {
+        print("❌ Aucun utilisateur trouvé avec l'email : $email");
       }
     } else {
-      print("Aucun fichier trouvé.");
+      print("❌ Le fichier user_data.json n'existe pas.");
     }
   }
 }

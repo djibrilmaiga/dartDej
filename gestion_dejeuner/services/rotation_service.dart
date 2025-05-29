@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/date_symbol_data_local.dart'; //
 import 'package:intl/intl.dart';
 
 import '../models/absence.dart';
@@ -174,42 +174,13 @@ class RotationService {
     return startDate.add(Duration(days: daysToAdd));
   }
 
-  Future<void> startRotation(DateTime dateRotation) async {
-    // print(" 🎰 Rotation lancée !");
-    File file = File('user_data.json');
-
-    if (await file.exists()) {
-      String contents = await file.readAsString();
-      Map<String, dynamic> dataJson = jsonDecode(contents);
-      List<dynamic> users = dataJson["agents"];
-      List<dynamic> tourData = dataJson["rotations"];
-      List<dynamic> indisponibiliteData = dataJson["indisponibilites"];
-      List<dynamic> jourFerierData = dataJson["joursFeries"];
-      for (var user in users) {
-        agents.add(Agent.fromJson(user));
-      }
-
-      for (var tour in tourData) {
-        rotation.add(TourAgent.fromJson(tour));
-      }
-
-      for (var indisponibilite in indisponibiliteData) {
-        indisponibilites.add(Indisponibilite.fromJson(indisponibilite));
-      }
-      for (var jourF in jourFerierData) {
-        joursFeries.add(JourFerier.fromJson(jourF));
-      }
-
-      List<TourAgent> tours = await affecterTour(dateRotation);
-
-      dataJson['rotations'] = tours;
-      await file.writeAsString(jsonEncode(dataJson), flush: true);
-
-      rotationCycleNumber++;
-      print(rotationCycleNumber);
-    }
-  }
-
+  /// La méthode `affecterTour` affecte les tours aux agents en fonction de leur disponibilité
+  /// et des jours fériés. Elle prend en paramètre la date de rotation et retourne une liste de `TourAgent`.
+  /// Elle lit les données des agents, des indisponibilités et des jours fériés à partir d'un fichier JSON,
+  /// puis attribue les tours en respectant les indisponibilités et les jours fériés.
+  /// Elle envoie également des rappels par email aux agents deux jours avant leur tour.
+  /// Elle retourne une liste de `TourAgent` représentant les tours attribués.
+  /// Elle utilise la méthode `sendEmail` pour envoyer des emails de rappel.
   Future<List<TourAgent>> affecterTour(DateTime dateRotation) async {
     File file = File('user_data.json');
 
@@ -250,79 +221,72 @@ class RotationService {
       DateTime currentDate = dateRotation;
 
       while (agentsCopy.isNotEmpty) {
-        Agent agentActuel = agentsCopy.first;
-        bool indisponible = false;
+        // ✅ Pour éviter boucle infinie : essayer chaque agent au maximum une fois par date
+        int essais = 0;
+        int maxEssais = agentsCopy.length;
 
-        // Vérifier l'indisponibilité
-        for (var indispo in indisponibilites) {
-          if (indispo.agent.email == agentActuel.email &&
-              isSameDate(indispo.date, currentDate)) {
-            print(
-                "L'agent ${agentActuel.fullName} est indisponible le ${indispo.date}");
-            indisponible = true;
-            break;
-          }
-        }
+        bool tourAttribue = false;
 
-        // Vérifier si c'est un jour férié
-        bool estJourFerier = false;
-        for (var jourF in joursFeries) {
-          if (isSameDate(jourF.date, currentDate)) {
-            estJourFerier = true;
-            print("Le ${currentDate} est un jour férié (${jourF.description})");
-            break;
-          }
-        }
+        while (!tourAttribue && essais < maxEssais) {
+          Agent agentActuel = agentsCopy.first;
 
-        if (indisponible || estJourFerier) {
-          // Reporter l'agent à la fin de la liste
+          // Vérifier indisponibilité
+          bool indisponible = indisponibilites.any((indispo) =>
+              indispo.agent.email == agentActuel.email &&
+              isSameDate(indispo.date, currentDate));
+
           if (indisponible) {
             print(
-                "${agentActuel.fullName} est indisponible pour le ${currentDate}, Votre tour est repoté à la fin de liste . Merci");
+                "⛔️ ${agentActuel.fullName} est indisponible le $currentDate, reporté à la fin de la liste.");
             agentsCopy.removeAt(0);
             agentsCopy.add(agentActuel);
-          } else {
-            print(
-                "${currentDate} est un jour Férier votre Donc votre tour sera déclarer");
-            // Pour un jour férié, on incrémente la date pour tout le monde
-            if (estJourFerier) {
-              currentDate = currentDate.add(Duration(days: 7));
-            }
+            essais++;
+            continue;
           }
-        } else {
-          // Créer le tour
-          TourAgent tour = TourAgent(
+
+          // Si disponible => affecter
+          tours.add(TourAgent(
             agent: agentActuel,
             date: currentDate,
             status: "En attente du tour",
             agentIndex: index,
-          );
-          tours.add(tour);
+          ));
+
           await initializeDateFormatting('fr_FR', null);
           print(
               "🔥 :) Tour attribué à ${agentActuel.fullName} le ${DateFormat("dd MMMM yyyy", "fr_FR").format(currentDate)}");
 
           agentsCopy.removeAt(0);
-          currentDate = currentDate.add(Duration(days: 7)); // prochaine semaine
           index++;
-          // DateTime dateDuTour = currentDate;
-          // DateTime dateRappel = dateDuTour.subtract(Duration(days: 2));
-          // // Envoi d'un rappel 2 jours avant le tour
+          tourAttribue = true;
 
-          // Future.delayed(Duration(seconds: 2), () async {
-          //   await sendEmail(agentActuel.email,
-          //       "Rappel : Vous avez un tour le ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
-          //   print(
-          //       "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
-          // });
-          // if (DateTime.now().isAfter(dateRappel) &&
-          //     DateTime.now().isBefore(dateDuTour)) {
+          // Rappel email
+          DateTime dateRappel = currentDate.subtract(Duration(days: 2));
+          if (DateTime.now().isAfter(dateRappel) &&
+              DateTime.now().isBefore(currentDate)) {
+            await sendEmail(agentActuel.email,
+                "Rappel : Vous avez un tour le ${DateFormat("dd MMMM yyyy", "fr_FR").format(currentDate)}");
 
-          // print(
-          //     "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(dateDuTour)}");
-          // }
+            print(
+                "Rappel envoyé à ${agentActuel.fullName} pour le tour du ${DateFormat("dd MMMM yyyy", "fr_FR").format(currentDate)}");
+          }
         }
+
+        if (!tourAttribue) {
+          print("⚠️ Aucun agent disponible le ${currentDate}, date ignorée.");
+        }
+
+        // Vérifier si c’est un jour férié (à la fin pour ne pas bloquer au début)
+        bool estJourFerier =
+            joursFeries.any((jourF) => isSameDate(jourF.date, currentDate));
+        if (estJourFerier) {
+          print("🎉 Jour férié le ${currentDate}, on saute cette semaine.");
+        }
+
+        // 🔄 Avancer à la semaine suivante quoi qu’il arrive (même si personne n’a été affecté)
+        currentDate = currentDate.add(Duration(days: 7));
       }
+
       rotationCycleNumber++;
       // Sauvegarder les modifications
       dataJson['rotations'].add({
@@ -394,29 +358,13 @@ class RotationService {
       await file.writeAsString(jsonEncode(data), flush: true);
       print(
           "✅ Indisponibilité ajoutée avec succès pour ${agent.fullName} le ${formatDate(dateIndisponibilite)}");
+    } else {
+      print(
+          "❌ Pas de fichier json pour enregistrer l'indisponibilité d'un Agent");
     }
   }
 
-  // void afficherProchainesRotations(int nombre) {
-  //   List<TourAgent> prochaines = rotation
-  //       .where((r) => r.date.isAfter(DateTime.now()))
-  //       .take(nombre)
-  //       .toList();
-  //   for (var r in prochaines) {
-  //     print("${r.agent.nom} - ${r.date.toLocal()} (${r.status})");
-  //   }
-  // }
-
-  /// Envoi de rappels simulés
-  void envoyerRappel(DateTime date) {
-    final entry = rotation.firstWhere((r) => r.date.isAtSameMomentAs(date),
-        orElse: () => throw Exception("Rotation non trouvée"));
-    print(
-        "Rappel envoyé à ${entry.agent.fullName} pour le petit-déjeuner du ${formatDate(date)}");
-  }
-
   /// Méthode pour signaler l'absnece d'un Agent du système Daraka Douman
-
   Future<void> signalerAbsence() async {
     DateTime dateAbsence;
     print("Veuillez entrer l'email de l'agent :");
@@ -490,6 +438,8 @@ class RotationService {
     }
   }
 
+  /// Méthode pour afficher les liste des agnets asbents de Daraka Douman
+  /// ILl parcourt la liste des absences dans le fichier Json et affiche les informations
   void afficherAbsence() {
     if (absences.isEmpty) {
       print("Aucune absence enregistrée.");

@@ -19,7 +19,7 @@ void main() async {
     // Affichage du menu pour choisir le type d'utilisateur
 
     int userTypeChoice = showMenu([
-      "Connexion Admin",
+      "Connexion Admin ",
       "Connexion Agent",
       "Avoir de l'info sur Dart Dej ?",
       "Quitter Dart dej !"
@@ -45,15 +45,16 @@ void main() async {
 //Menu pour l'admin
           while (!quitter) {
             int choice = showMenu([
-              "Inscrire Agent",
+              "Inscrire un Agent",
               "Voir la liste des Tours ",
-              "Afficher le liste des agents",
-              "Choisir le journée de rotation",
-              "Renseigner jour Ferier",
-              "Desactiviter Agent",
-              "Marquer une Absence",
+              "Afficher la liste des agents",
+              "Choisir la journée de rotation",
+              "Ajouter un jour Ferier",
+              "Desactiviter un Agent",
+              "Declarer une Absence",
               "Afficher les jours Ferier",
               "Afficher les indisponibilites",
+              "Afficher les absences",
               "Deconnexion",
             ], "🥳🥳🥳🥳Bienvenue sur  DartDej[Menu Admin] ☃︎");
 
@@ -92,7 +93,12 @@ void main() async {
                 RotationService().afficherIndisponibilites();
                 break;
               case 9:
+                await RotationService.chargerDonnees();
+                RotationService().afficherAbsence();
+                break;
+              case 10:
                 print("👋 Vous êtes deconnecter");
+                print("");
                 quitter = true;
 
                 break;
@@ -103,7 +109,8 @@ void main() async {
           break;
         } else {
           print(
-              "Les champs de peuvent pas être vide (Saisissez votre email et mot de passe) !");
+              "Les champs ne peuvent pas être vide (Saisissez votre email et mot de passe) !");
+          print("");
           break;
         }
 
@@ -111,19 +118,23 @@ void main() async {
         Agent? agent = await AgentService.seConnecter();
         if (agent == null) {
           print("❌ Vous n'êtes pas un agent ou vous n'avez pas été inscrit.");
+          print("");
           break;
         }
 
         while (agent.motDePasse == "darakadouman") {
           print(
               "Veuillez changer votre mot de passe par defaut avant de continuez . Merci ! :");
+          print("");
           String? motDePasse = stdin.readLineSync();
           if (motDePasse != null && motDePasse.isNotEmpty) {
             await AgentService.updatePassword(agent.email, motDePasse);
             print("Votre mot de passe a été changé avec succès !");
+            print("");
             break;
           } else {
             print("Le mot de passe ne peut pas être vide. Veuillez réessayer.");
+            print("");
             continue;
           }
         }
@@ -134,6 +145,7 @@ void main() async {
         bool quitter = false;
         while (!quitter && agent.motDePasse != "darakadouman") {
           print("\n--- Menu de l'agent ---");
+          print("");
           print("Agent connecté : ${agent.fullName}");
           int userChoice = showMenu([
             "Declarer indisponibite",
@@ -143,6 +155,7 @@ void main() async {
           switch (userChoice) {
             case 0:
               print("vous avez choisi de declarer indisponibilite");
+              print("");
 
               await RotationService.declarerIndisponibilite(agent.email);
               if (jourDeRotation != null) {
@@ -159,6 +172,7 @@ void main() async {
                   ? await RotationService().affecterTour(jourDeRotation)
                   : print(
                       "Aucune information sur les tours car L'admin n'a pas de choisi de date !");
+              print("");
 
               break;
             case 2:
@@ -166,17 +180,20 @@ void main() async {
               break;
             default:
               print("❗ Choix invalide.");
+              print("");
           }
         }
         break;
       case 2:
         print("""" voir de information sur dart dej ! """);
+        print("");
         break;
       case 3:
         quitterDartDel = true;
         true;
       default:
         print("Merci de d'être sur Dart Dej");
+        print("");
     }
   }
 }

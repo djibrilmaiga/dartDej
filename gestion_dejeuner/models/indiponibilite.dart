@@ -10,6 +10,7 @@ class Indisponibilite {
   DateTime declarerDateTour;
   String reason;
 
+  /// Constructeur de la classe `Indisponibilite`.
   Indisponibilite({
     required this.agent,
     required this.date,
@@ -17,6 +18,7 @@ class Indisponibilite {
     String? reason,
   }) : reason = reason ?? "Non précisé";
 
+  /// Convertit l'objet `Indisponibilite` en un format JSON.
   Map<String, dynamic> toJson() => {
         'agent': agent.toJson(),
         'date': date.toIso8601String(),
@@ -24,7 +26,9 @@ class Indisponibilite {
         'reason': reason,
       };
 
-  static Indisponibilite fromJson(Map<String, dynamic> json) => Indisponibilite(
+  /// Crée un objet `Indisponibilite` à partir d'un format JSON.
+  factory Indisponibilite.fromJson(Map<String, dynamic> json) =>
+      Indisponibilite(
         agent: Agent.fromJson(json['agent']),
         date: DateTime.parse(json['date']),
         declarerDateTour: DateTime.parse(json['declarerDateTour']),

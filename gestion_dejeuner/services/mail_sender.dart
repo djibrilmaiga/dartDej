@@ -22,7 +22,3 @@ Future<void> sendEmail(String email, String msg) async {
     print('Erreur lors de l\'envoi : $e');
   }
 }
-
-void main() async {
-  await sendEmail("djenymaiga292@gmail.com", "Salut djeny");
-}

@@ -6,6 +6,8 @@ class TourAgent {
   String status;
   int agentIndex;
 
+  /// Constructeur de la classe `TourAgent`.
+  /// Prend en paramètres un objet `Agent`, une date, un statut et l'index de l'agent.
   TourAgent({
     required this.agent,
     required this.date,
@@ -13,6 +15,7 @@ class TourAgent {
     required this.agentIndex,
   });
 
+  /// Convertit l'objet `TourAgent` en un format JSON.
   Map<String, dynamic> toJson() => {
         'agent': agent.toJson(),
         'date': date.toIso8601String(),
@@ -20,7 +23,8 @@ class TourAgent {
         'agentIndex': agentIndex,
       };
 
-  static TourAgent fromJson(Map<String, dynamic> json) {
+  /// Crée un objet `TourAgent` à partir d'un format JSON.
+  factory TourAgent.fromJson(Map<String, dynamic> json) {
     return TourAgent(
       agent: Agent.fromJson(json['agent']),
       date: DateTime.parse(json['date']),

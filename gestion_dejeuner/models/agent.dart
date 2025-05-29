@@ -9,12 +9,16 @@ class Agent {
   String motDePasse = "darakadouman";
   bool estActif = true;
 
+  ///Constructeur de la classe `Agent`.
+  /// Prend en paramètres le nom, le prénom et l'email de l'agent.
   Agent({
     required this.nom,
     required this.prenom,
     required this.email,
   });
 
+  /// Convertit l'objet `Agent` en un format JSON.
+  /// Utilisé pour la sérialisation des données.
   Map<String, dynamic> toJson() => {
         'nom': nom,
         'prenom': prenom,
@@ -24,6 +28,8 @@ class Agent {
       };
   String get fullName => '$prenom $nom';
 
+  /// Crée un objet `Agent` à partir d'un format JSON.
+  /// Utilisé pour la désérialisation des données.
   factory Agent.fromJson(Map<String, dynamic> json) {
     final agent = Agent(
       nom: json['nom'] as String,
