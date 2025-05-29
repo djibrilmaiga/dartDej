@@ -47,11 +47,21 @@ void main() async {
             int choice = showMenu([
               "Inscrire un Agent",
               "Voir la liste des Tours ",
+<<<<<<< HEAD
               "Afficher la liste des agents",
               "Choisir la journée de rotation",
               "Ajouter un jour Ferier",
               "Desactiviter un Agent",
               "Declarer une Absence",
+=======
+              "Afficher le liste des agents",
+              "Choisir le journée de rotation",
+              "Renseigner jour Ferier",
+              "Desactiviter Agent",
+              "Marquer une Absence",
+              //ajouter la liste des absences
+              "Afficher les absences",
+>>>>>>> 583718ba07a11f240b37423202055269c921a189
               "Afficher les jours Ferier",
               "Afficher les indisponibilites",
               "Afficher les absences",
@@ -86,16 +96,22 @@ void main() async {
                 break;
               case 7:
                 await RotationService.chargerDonnees();
+                RotationService().afficherAbsence();
+              case 8:
+                await RotationService.chargerDonnees();
                 RotationService().afficherJoursFeries();
                 break;
-              case 8:
+              case 9:
                 await RotationService.chargerDonnees();
                 RotationService().afficherIndisponibilites();
                 break;
+<<<<<<< HEAD
               case 9:
                 await RotationService.chargerDonnees();
                 RotationService().afficherAbsence();
                 break;
+=======
+>>>>>>> 583718ba07a11f240b37423202055269c921a189
               case 10:
                 print("👋 Vous êtes deconnecter");
                 print("");
